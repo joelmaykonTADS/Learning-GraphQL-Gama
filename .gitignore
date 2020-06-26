@@ -1,3 +1,2 @@
 client-server/node_modules
-packages/server/node_modules
-packages/web/node_modules
+client-server-package/server/node_modules
