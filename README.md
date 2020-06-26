@@ -127,3 +127,13 @@
   - No package.json do server adicionamos o `@dev-demands/server` no nome do **projeto server**
   - Para instalar os módulos node no projeto server: `pnpm i --filter @dev-demands/server`
   - Para executar o server `pnpm run start --filter @dev-demands/server`
+
+  #### Criando um app web React
+  - Dentro do diretório packages executamos o comando `pnpx create-react-app web` para criar o app
+  - caso use o npm ou yarn remover o arquivo package.lock ou yarn.lock e a pasta node_modules
+  - executar o `pnpm i --filter @dev-demands/web` para instalar os módulos com o **pnpm** e gerar o pnpm-lock.yaml
+  
+  #### Configuração do app Web React
+  - instalar o pacote de gerência de rotas com: `pnpm i react-router-dom  --filter @dev-demands/web`
+  - configurar o react-router-dom para controle de rotas no index.js do app web
+  - criar um arquivo Router.js para ter as rotas
