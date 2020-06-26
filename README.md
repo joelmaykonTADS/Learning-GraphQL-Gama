@@ -21,11 +21,11 @@
     </a>      
     <span> | </span>
     <a href="#interfaces">
-      Implementação
+      Implementação do server
     </a>  
      <span> | </span>
-    <a href="#classes">
-      Classes, modificadores de acesso e Herança
+    <a href="#monorepo">
+      MonoRepository
     </a>    
     <span> | </span>
     <a href="https://amzn.to/2HXSx2M">
@@ -97,7 +97,7 @@
     })
   ```
   - ###### Outras Rotas implementadas no servidor: [main.js](client-server/src/main.js)
-    - Usando redirecionamento, renderização de parâmetro
+    - Usando Renderização, parâmetros e redirecionamentos. 
   <table>
     <th>Rotas</th>
     <th>Respostas</th>
@@ -116,3 +116,14 @@
       <td>Retona a página de home</td>
     </tr>
   </table>
+
+
+  #### MonoRepository com **pnpm**
+  - Instalação do pnpm `npm i -g pnpm`
+  - Na raiz do diretório root **packages** :
+    - executamos o comando `pnpm init`
+    - configuramos como `package name: (packages) @dev-demands/root`
+  - O projeto foi separado em uma pasta server e outra web
+  - No package.json do server adicionamos o `@dev-demands/server` no nome do **projeto server**
+  - Para instalar os módulos node no projeto server: `pnpm i --filter @dev-demands/server`
+  - Para executar o server `pnpm run start --filter @dev-demands/server`
