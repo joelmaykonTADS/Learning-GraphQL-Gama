@@ -1,9 +1,10 @@
 import React from 'react';
+import Router from './Router';
 
 function App() {
   return (
-   null
-  );
+    <Router /> 
+  )   
 }
 
 export default App;
