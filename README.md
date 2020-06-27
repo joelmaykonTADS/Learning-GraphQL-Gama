@@ -171,3 +171,86 @@
       console.log(`Server is running at http://${ip}:${port}`);
     });
     ```
+
+    #### Fazendo requisições assincronas com o app Web
+    - Alteramos o Form para adequar-se ao React
+
+    ```bash
+      <form onSubmit={handleSubmit}>
+        <fieldset>
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            value={email}
+            onChange={handleEmailChange}
+            autoComplete="username"
+          />
+        </fieldset>
+        <fieldset>
+          <label htmlFor="password">Senha</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+            autoComplete="current-password"
+          />
+        </fieldset>
+        <button type="submit">Entrar</button>
+      </form>
+    ```
+    - criamos o método para o que o form acesse a rota de autenticação do server
+    ```bash
+        const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log('teste');
+        fetch('http://localhost:8000/autheticate',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email,
+              password
+            })
+          })
+          .then((res) => res.json())
+          .then(() => {
+            console.log('Success!');
+          });
+      };
+    ```
+  
+  #### Resolvendo o problema de CORS do server
+  - instalamos o módulo para resolver o CORS com `pnpm i --filter @dev-demands/server`
+  - configuramos no [main.js](packages/server/src/main.js)
+    ```bash
+      const enableCors = cors({ origin: 'http://localhost:3000' });
+    ```
+  - Na rota fazemos a configuração dos métodos **OPTIONS**  e  **POST**
+    ```bash
+        server
+          .options('/authenticate',enableCors)
+          .post('/authenticate',enableCors, express.json(), (req, res) => {
+          console.log('Mail:', req.body.mail, 'Password:', req.body.password);
+          res.send();
+        });
+    ```
+
+  ####  API's RESTful X GraphQL
+  ##### Como funciona o RESTful
+  - Recebem parâmetros e envia dados usando JSON como formato
+  - Tdodas operações são abstraidos detro dos métodos HTTP (GET, POST, PUT, PATH, DELETE e OPTION).
+  - As **rotas**, ou **endpoints**, são baseados nas entidades das aplicações
+  ##### Problemas
+  - As API's nesse formato são limitadas pelos protocolos que as definem.
+  - Criam dificuldades para lidar com relações entre as entidades, sendo implementadas manualmente essas relações.
+  ##### O que o GraphQL resolve
+  - Realizar Cascata de requisições(**Request Waterfall**)
+  - Responder com dados mais que suficientes nas API's(**Over-Fetching**) em vez do RESTful(**Under-Fetching**)
+
+  #### ApoloServer
+  
