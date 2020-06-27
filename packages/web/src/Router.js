@@ -1,11 +1,14 @@
 import React from 'react';
-import { Switch, Router } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Signin from './pages/Signin';
+
 
 export default function Router() {
     return (
         <Switch>
-            <Router exact path={["","/"]}component={} />
-            <Router exact path="/sign-in" component={}/>
+            <Route exact path={["","/"]}component={Home} />
+            <Route exact path="/sign-in" component={Signin}/>
         </Switch>
     )
 }
