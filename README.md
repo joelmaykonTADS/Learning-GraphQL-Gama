@@ -137,3 +137,37 @@
   - instalar o pacote de gerência de rotas com: `pnpm i react-router-dom  --filter @dev-demands/web`
   - configurar o react-router-dom para controle de rotas no index.js do app web
   - criar um arquivo Router.js para ter as rotas
+  - importar os componentes no <a href="./packages/web/src/Router.js">Router.js</a> que queremos renderizar através das rotas
+    <table>
+    <th>Rota</th>
+    <th>Componente</th>
+    <tr><td>/</td><td> <a href="packages/web/src/pages/Home.js">Home.js</a></td></tr>
+    <tr><td>/sign-in</td><td><a href="packages/web/src/pages/Signin.js">Signin.js</a></td></tr>
+    </table>
+
+  #### Criar um server com express
+  - instalar o módulo express `pnpm i express --filter @dev-demands/server`
+  - nossos endpoints e middwares usando o **express**:
+    ```bash
+    import express from 'express';
+
+    const server = express();
+
+    server.get('/status', (_, res) => {
+      res.send({
+        status: 'OK'
+      })
+    });
+
+    server.post('/authenticate', express.json(), (req, res) => {
+      console.log('Mail:', req.body.mail, 'Password:', req.body.password);
+      res.send();
+    });
+
+    const ip = process.env.HOSTNAME || "127.0.0.1";
+    const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+
+    server.listen(port, ip, () => {
+      console.log(`Server is running at http://${ip}:${port}`);
+    });
+    ```
