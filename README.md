@@ -253,4 +253,126 @@
   - Responder com dados mais que suficientes nas API's(**Over-Fetching**) em vez do RESTful(**Under-Fetching**)
 
   #### ApoloServer
+
+  -  Apollo é um conjunto de ferramentas e produtos criados pelo time de desenvolvimento do Meteor para trabalhar com GraphQl.
+  - Foi adicionado o nodemoon para ajudar na construção do código quando hover mudanças, o server é reiniciado com as novas implementações
+  - Acrescentamos no arquivo package.json
+    `"dev":"nodemon -r esm .",`
+
+  - Apenas com o código abaixo é possível fazer query em GraphQL
+      ```bash
+        import express from 'express';
+        import { ApolloServer, gql } from 'apollo-server-express'
+
+        const app = express();
+
+        const server = new ApolloServer({
+          typeDefs: gql`
+            type Client{
+              id:ID!
+              name:String!
+            }
+
+            type Demands{
+              id:ID!
+              name:String!
+              client:Client!
+              deadline:String
+            }
+
+            type Query {
+              demands:[Demands]!
+            }
+          
+          `,
+          resolvers: {
+            Query: {
+              demands: () => [],
+            }
+          }
+
+        });
+
+        server.applyMiddleware({
+          app,
+          cors: {
+            origin: 'http://localhost:3000'
+          }
+        })
+        const ip = process.env.HOSTNAME || '127.0.0.1';
+        const port = process.env.PORT ? parseInt(process.env.PORT) : 8000;
+
+        app.listen(port, ip, () => {
+          console.log(`Server is running at http://${ip}:${port}`);
+        });
+
+      ```
+      >Basta acessar: http://localhos:8000/graphql
+      - mostrando o playground do GraphQL
   
+     ![](assets/image/graphqlApolloServer.gif)
+
+    #### TypeDefs e Resolvers
+    - Para escalar bem a aplicação servidora, foi quebrado em uma camada chamda `graphql` que server para ter os dominíos e entidades que proveêm typedefs e resolvers
+    - Separado em módulos client e demands com seus respectivos types e query
+
+    #### Querys
+    - é a forma de obter dados através dessas operaçoes síncronas ou assíncronas.
+    - Possibilita commits e rollbacks
+    - O graphQL não diz respeito a banco de dados é apenas uma camada entre o front-end e o back-end
+    - Podemos orquestrar microserviços, unindo-os e prover regras de negócios bem elaboradas
+    - os dados fake foram gerados no [mokaroo](https://mookaroo.com)
+    ![](assets/image/mokaroo.gif)
+    - A camada de dados com os dados fakes em [client.json](./packages/server/src/data/client.json)
+    - Uma camada de leitura e escrita no JSON chamada de Database e o repository executando com o código abaixo
+      ```bash
+          import {
+            readFile, writeFile
+          } from 'fs';
+
+          import { resolve } from 'path';
+
+          function createRepository(name) {
+            const path = resolve(__dirname, `../../data${name}.json`);
+            return {
+
+              read: () => new Promise((resolve, reject) => {
+                readFile(path, (error, data) => {
+                  if (error) {
+                    reject(error);
+                    return;
+                  }
+                  resolve(JSON.parse(data));
+                })
+              }),
+              
+              write: () => new Promise(() => {
+                writeFile(path, JSON.stringify(data), (error) => {
+                  if (error) {
+                    reject(error);
+                    return;
+                  }
+                  resolve();
+                })
+              })
+            };
+          }
+          export default createRepository;
+      ```
+    - a query fica assim retornando por id ou todos os clients:
+      ```bash
+        export const resolvers = {
+          Query: {
+            client: async (_,{ id }) => {
+              const clients = await clientRepository.read();
+              return clients.find(client => client.id == id);
+            },
+            clients: async () => {
+              const clients = await clientRepository.read();
+              return clients;
+            }
+          }
+        }
+      ```
+      ![](assets/image/retornandoClientsID.gif)
+    - implementado nas query o filter, paginate e ordenation
