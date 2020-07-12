@@ -36,14 +36,20 @@ export const typeDefs = gql`
     clients(options:ClientListOptions):ClientList
   }
 
-  input CreateClient {
+  input CreateClientInput {
+    name:String!
+    email:String!
+  }
+
+  input UpdateClientInput {
+    id:ID!
     name:String!
     email:String!
   }
 
   extend type Mutation {
-    createClient(input:CreateClient!):Client!
-
+    createClient(input:CreateClientInput!):Client!
+    updateClient(input:UpdateClientInput):Client!
   }
 `;
 
@@ -129,6 +135,29 @@ export const resolvers = {
 
       await clientRepository.write([...clients, client]);
       return client
-    } 
+    },
+    updateClient: async (_, { input }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === input.id);
+
+      if (!currentClient) {
+        throw new Error(`No client with this id"${input.id}"`)
+      };
+
+      const updateClient = {
+        ...currentClient,
+        name: input.name,
+        email: input.email,
+      };
+
+      const updateClients = clients.map((client) => {
+        if (client.id === updateClient.id) return updateClient;
+        return client;
+      });
+
+      await clientRepository.write(updateClients);
+      return updateClient;
+    }
   }
 }  
