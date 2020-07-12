@@ -375,4 +375,8 @@
         }
       ```
       ![](assets/image/retornandoClientsID.gif)
-    - implementado nas query o filter, paginate e ordenation
+    - implementado nas query o filter, paginate e ordenation no [Client](packages/server/src/graphql/Client/Client.js) 
+    - Observe que no [List](packages/server/src/graphql/List/List.js) [Node](packages/server/src/graphql/Node/Node.js) temos implemantações dos TypesDefs e Resolvers para customizar as informações
+    - **Query** usamos para apenas fazer operações em cima de buscas de dados
+    - Para modificações usamos as **Mutatios**
+    - 

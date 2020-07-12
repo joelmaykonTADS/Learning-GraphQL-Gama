@@ -1,6 +1,7 @@
 import { gql } from 'apollo-server-express';
 import createRepository from '../../io/Database/createRepository';
 import { ListSrtementEnum } from '../List/List';
+import * as uuid from 'uuid';
 
 const clientRepository = createRepository('client')
 
@@ -33,6 +34,16 @@ export const typeDefs = gql`
   extend type Query {
     client(id:ID!):Client
     clients(options:ClientListOptions):ClientList
+  }
+
+  input CreateClient {
+    name:String!
+    email:String!
+  }
+
+  extend type Mutation {
+    createClient(input:CreateClient!):Client!
+
   }
 `;
 
@@ -76,13 +87,13 @@ export const resolvers = {
       }
 
       const filtredClients = clients.filter((client) => {
-        if (!filter ||Object.keys(filter).length === 0) {
+        if (!filter || Object.keys(filter).length === 0) {
           return true
         }
         return Object.entries(filter)
-        .every(([field, value]) => {
-          if (client[field] === null || client[field] === undefined)
-            return false
+          .every(([field, value]) => {
+            if (client[field] === null || client[field] === undefined)
+              return false
             if (typeof (value) === 'string') {
               if (value.startsWith('%') && value.endsWith('%')) {
                 return client[field].includes(value.substr(1, value.length - 2))
@@ -104,5 +115,20 @@ export const resolvers = {
         totalItems: filtredClients.length
       };
     }
+  },
+
+  Mutation: {
+    createClient: async (_, { input }) => {
+      const clients = await clientRepository.read();
+      const client = {
+        id: uuid.v4(),
+        name: input.name,
+        email: input.email,
+        disabled:false
+      }
+
+      await clientRepository.write([...clients, client]);
+      return client
+    } 
   }
 }  

@@ -9,6 +9,11 @@ const typeDefs = gql`
   type Query {
     _root:String
   }
+
+  type Mutation {
+     _root:String
+  }
+
   ${nodeTypeDefs}
   ${listTypeDefs}
   ${clientTypeDefs}
