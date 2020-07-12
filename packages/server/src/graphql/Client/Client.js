@@ -50,6 +50,9 @@ export const typeDefs = gql`
   extend type Mutation {
     createClient(input:CreateClientInput!):Client!
     updateClient(input:UpdateClientInput):Client!
+    deleteClient(id:ID!):Client!
+    enableClient(id:ID!):Client!
+    disableClient(id:ID!):Client!
   }
 `;
 
@@ -158,6 +161,67 @@ export const resolvers = {
 
       await clientRepository.write(updateClients);
       return updateClient;
-    }
+    },
+
+    deleteClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+      const client = clients.find((client) => client.id === id);
+      if (!client)
+        throw new Error(`Cannot delete client with id ${id}`);
+      
+      const updateClients = clients.filter((client) => client.id !== id)
+      await clientRepository.write(updateClients);
+      return client;
+    },
+    enableClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === id);
+
+      if (!currentClient) {
+        throw new Error(`No client with this id"${id}"`)
+      };
+      if (!currentClient.disabled) {
+        throw new Error(`Cliente "${id}" whose id is already enabled`)
+      };
+
+      const updateClient = {
+        ...currentClient,
+        disabled:false
+      };
+
+      const updateClients = clients.map((client) => {
+        if (client.id === updateClient.id) return updateClient;
+        return client;
+      });
+
+      await clientRepository.write(updateClients);
+      return updateClient;
+    },
+    disableClient: async (_, { id }) => {
+      const clients = await clientRepository.read();
+
+      const currentClient = clients.find((client) => client.id === id);
+
+      if (!currentClient) {
+        throw new Error(`No client with this id"${id}"`)
+      };
+      if (currentClient.disabled) {
+        throw new Error(`Cliente "${id}" whose id is already disabled`)
+      };
+
+      const updateClient = {
+        ...currentClient,
+        disabled: true
+      };
+
+      const updateClients = clients.map((client) => {
+        if (client.id === updateClient.id) return updateClient;
+        return client;
+      });
+
+      await clientRepository.write(updateClients);
+      return updateClient;
+    },
   }
 }  
